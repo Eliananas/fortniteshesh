@@ -16,6 +16,8 @@ app.config['SESSION_COOKIE_NAME'] = 'Spotify Cookie'
 # set a random secret key to sign the cookie
 app.secret_key = 'YOUR_SECRET_KEY'
 
+
+
 # set the key for the token info in the session dictionary
 TOKEN_INFO = 'token_info'
 
@@ -26,6 +28,7 @@ def login():
     auth_url = create_spotify_oauth().get_authorize_url()
     # redirect the user to the authorization URL
     return redirect(auth_url)
+            
 
 # route to handle the redirect URI after authorization
 @app.route('/redirect')
@@ -41,6 +44,7 @@ def redirect_page():
     # redirect the user to the save_discover_weekly route
     return redirect(url_for('get_top_tracks',_external=True))
 
+#Route et fonctions qui vont nous permettre de prendre les 20 morceaux les plus écoutés sur court terme (1 semaine ou 2)
 @app.route('/get_top_tracks')
 def get_top_tracks():
     token_info = get_token()
@@ -54,27 +58,249 @@ def get_top_tracks():
 @app.route('/getlocation', methods=['GET', 'POST'])
 def getlocation():
     return '''
-        <form action="/getmeteo" method="post">
-            City: <input type="text" name="city">
-            <input type="submit" value="Get Weather">
-        </form>
+    <html>
+        <head>
+            <title>Entrez votre ville</title>
+            <style>
+                /* Style global pour la page */
+                body {
+                    background-color: #191414;
+                    color: #FFFFFF;
+                    font-family: 'Arial', sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    overflow: hidden;
+                }
+                
+                /* Barre de navigation */
+                .navbar {
+                    background-color: #2e2e33;
+                    width: 100%;
+                    padding: 15px 0;
+                    position: fixed;
+                    top: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                    z-index: 1000;
+                }
+                .navbar img {
+                    height: 50px;
+                    margin-left: 20px;
+                }
+                .navbar h1 {
+                    color: #1DB954;
+                    margin-right: 20px;
+                    font-size: 24px;
+                    font-weight: bold;
+                    text-align: center;
+                    animation: fadeIn 1.5s ease-in-out;
+                }
+                
+                /* Conteneur du formulaire */
+                .form-container {
+                    background-color: #282828;
+                    padding: 40px;
+                    border-radius: 15px;
+                    text-align: center;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+                    animation: slideUp 1.5s ease-in-out;
+                }
+
+                .form-container h2 {
+                    color: #1DB954;
+                    margin-bottom: 20px;
+                    font-size: 22px;
+                }
+
+                .form-container input[type="text"] {
+                    width: 100%;
+                    padding: 15px;
+                    font-size: 18px;
+                    border-radius: 10px;
+                    border: 2px solid #1DB954;
+                    margin-bottom: 20px;
+                    outline: none;
+                    transition: all 0.3s ease;
+                }
+                
+                .form-container input[type="text"]:focus {
+                    border-color: #02b44b;
+                    box-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
+                }
+
+                .form-container button {
+                    background-color: #1DB954;
+                    color: #FFFFFF;
+                    padding: 15px 30px;
+                    border: none;
+                    border-radius: 30px;
+                    font-size: 18px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                    box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+                }
+
+                .form-container button:hover {
+                    background-color: #02b44b;
+                    box-shadow: 0 6px 15px rgba(29, 185, 84, 0.5);
+                }
+
+                /* Animations */
+                @keyframes slideUp {
+                    0% {
+                        transform: translateY(50%);
+                        opacity: 0;
+                    }
+                    100% {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                }
+
+                @keyframes fadeIn {
+                    0% {
+                        opacity: 0;
+                    }
+                    100% {
+                        opacity: 1;
+                    }
+                }
+
+                /* Mobile responsiveness */
+                @media (max-width: 768px) {
+                    .form-container {
+                        padding: 20px;
+                        width: 90%;
+                    }
+                    .navbar img {
+                        height: 40px;
+                    }
+                    .navbar h1 {
+                        font-size: 20px;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <!-- Barre de navigation -->
+            <div class="navbar">
+                <a href="/"><img src="https://s1.gifyu.com/images/SOkIP.png" alt="meteorifylogo"></a>
+                <h1>Bienvenue sur Meteorify</h1>
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="form-container">
+                <h2>Veuillez insérer la ville où vous vous situez.</h2>
+                <form action="/getmeteo" method="post">
+                    <input type="text" id="city" name="city" placeholder="Ex: Paris" required>
+                    <br>
+                    <button type="submit">Obtenir la météo</button>
+                </form>
+            </div>
+        </body>
+    </html>
     '''
+
 
 @app.route('/getmeteo', methods=['GET', 'POST'])  # Allow both GET and POST
 def getmeteo():
     city = request.form.get('city') if request.method == 'POST' else request.args.get('city')
     session['city'] = city
     if not city:
-        return "City not specified", 400
+                return '''
+    <html>
+        <head>
+            <title>Entrez votre ville</title>
+            <style>
+                /* Style pour la barre de navigation */
+                .navbar {
+                    background-color: #5b5c66;
+                    position: fixed;
+                    top: 0;
+                    width: 100%;
+                    height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    box-shadow: 0 4px 2px -2px gray;
+                    z-index: 1000;
+                }
+                /* Style pour l'image dans la barre de navigation */
+                .navbar img {
+                    height: 40px;
+                }
+                /* Style pour le contenu principal */
+                body {
+                    background-color: #191414;
+                    color: #FFFFFF;
+                    font-family: Arial, sans-serif;
+                    text-align: center;
+                    margin: 0;
+                    padding: 0;
+                    padding-top: 80px; /* Pour ne pas que le contenu soit masqué par la barre de navigation */
+                }
+                /* Style du formulaire */
+                .form-container {
+                    margin-top: 50px;
+                }
+                input[type="text"] {
+                    padding: 10px;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    border: 1px solid #1DB954;
+                    margin: 10px;
+                }
+                button {
+                    background-color: #1DB954;
+                    color: #FFFFFF;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+            </style>
+        </head>
+        <body>
+            <!-- Barre de navigation -->
+            <div class="navbar">
+                <a href="https://ibb.co/qrpydwW" style="margin-left: 20px;"><img src="https://i.ibb.co/qrpydwW/meteorifylogo.png" alt="meteorifylogo" border="0"></a>   
+                <h1 style="color: #02b44b; margin-left:auto; margin-right:auto;">Bienvenue sur meteorify !</h1>       
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="form-container">
+                <text style="color: #1DB954;"><strong><i>Plongez dans une expérience musicale personnalisée qui s'adapte à chaque moment de votre journée.</i></strong></text>
+                <h2 style="color: #1DB954;">Veuillez insérer la ville où vous vous situez.</h2>
+                <form action="/getmeteo" method="post">
+                    <input type="text" id="city" name="city" placeholder="Ex: Paris">
+                    <br>
+                    <button type="submit">Obtenir la météo</button>
+                </form>
+                <h2 style="color: #ff2727;">Veuilez insérer une ville!</h2>
+            </div>
+        </body>
+    </html>
+    '''
+
     
-    # Remplacez {API key} par votre clé d'API personnelle d'OpenWeatherMap
-    api_key = "6c9e30b56a098814c0810b64050066c1"
-    session ["api_key"] = api_key
+    api_key = "6c9e30b56a098814c0810b64050066c1"  
+    session["api_key"] = api_key
+
     # Construire l'URL pour la requête à l'API de géolocalisation
     geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={api_key}"
+    
     response = requests.get(geo_url).json()
+    print(f"Geolocation API response: {response}")  # Pour voir la réponse de l'API dans la console s'il y as des bugs/soucis
+
     if response and isinstance(response, list) and len(response) > 0:
-    # Access the first item in the list
+        # Accéder au premier élément de la réponse
         city_data = response[0]
         lat = city_data.get('lat')
         lon = city_data.get('lon')
@@ -83,10 +309,160 @@ def getmeteo():
             session['lon'] = lon
             return redirect(url_for('getweather', _external=True))
         else:
-            return "No data found for the specified city 1", 404
+                    return '''
+    <html>
+        <head>
+            <title>Entrez votre ville</title>
+            <style>
+                /* Style pour la barre de navigation */
+                .navbar {
+                    background-color: #5b5c66;
+                    position: fixed;
+                    top: 0;
+                    width: 100%;
+                    height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    box-shadow: 0 4px 2px -2px gray;
+                    z-index: 1000;
+                }
+                /* Style pour l'image dans la barre de navigation */
+                .navbar img {
+                    height: 40px;
+                }
+                /* Style pour le contenu principal */
+                body {
+                    background-color: #191414;
+                    color: #FFFFFF;
+                    font-family: Arial, sans-serif;
+                    text-align: center;
+                    margin: 0;
+                    padding: 0;
+                    padding-top: 80px; /* Pour ne pas que le contenu soit masqué par la barre de navigation */
+                }
+                /* Style du formulaire */
+                .form-container {
+                    margin-top: 50px;
+                }
+                input[type="text"] {
+                    padding: 10px;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    border: 1px solid #1DB954;
+                    margin: 10px;
+                }
+                button {
+                    background-color: #1DB954;
+                    color: #FFFFFF;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+            </style>
+        </head>
+        <body>
+            <!-- Barre de navigation -->
+            <div class="navbar">
+                <a href="https://ibb.co/qrpydwW" style="margin-left: 20px;"><img src="https://i.ibb.co/qrpydwW/meteorifylogo.png" alt="meteorifylogo" border="0"></a>   
+                <h1 style="color: #02b44b; margin-left:auto; margin-right:auto;">Bienvenue sur meteorify !</h1>       
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="form-container">
+                <text style="color: #1DB954;"><strong><i>Plongez dans une expérience musicale personnalisée qui s'adapte à chaque moment de votre journée.</i></strong></text>
+                <h2 style="color: #1DB954;">Veuillez insérer la ville où vous vous situez.</h2>
+                <form action="/getmeteo" method="post">
+                    <input type="text" id="city" name="city" placeholder="Ex: Paris">
+                    <br>
+                    <button type="submit">Obtenir la météo</button>
+                </form>
+                <h2 style="color: #ff2727;">Cette ville n'est pas valide...</h2>
+            </div>
+        </body>
+    </html>
+    '''
+
     else:
-        return "No data found for the specified city 2", 404
-    
+        return '''
+    <html>
+        <head>
+            <title>Entrez votre ville</title>
+            <style>
+                /* Style pour la barre de navigation */
+                .navbar {
+                    background-color: #5b5c66;
+                    position: fixed;
+                    top: 0;
+                    width: 100%;
+                    height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    box-shadow: 0 4px 2px -2px gray;
+                    z-index: 1000;
+                }
+                /* Style pour l'image dans la barre de navigation */
+                .navbar img {
+                    height: 40px;
+                }
+                /* Style pour le contenu principal */
+                body {
+                    background-color: #191414;
+                    color: #FFFFFF;
+                    font-family: Arial, sans-serif;
+                    text-align: center;
+                    margin: 0;
+                    padding: 0;
+                    padding-top: 80px; /* Pour ne pas que le contenu soit masqué par la barre de navigation */
+                }
+                /* Style du formulaire */
+                .form-container {
+                    margin-top: 50px;
+                }
+                input[type="text"] {
+                    padding: 10px;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    border: 1px solid #1DB954;
+                    margin: 10px;
+                }
+                button {
+                    background-color: #1DB954;
+                    color: #FFFFFF;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+            </style>
+        </head>
+        <body>
+            <!-- Barre de navigation -->
+            <div class="navbar">
+                <a href="https://ibb.co/qrpydwW" style="margin-left: 20px;"><img src="https://i.ibb.co/qrpydwW/meteorifylogo.png" alt="meteorifylogo" border="0"></a>   
+                <h1 style="color: #02b44b; margin-left:auto; margin-right:auto;">Bienvenue sur meteorify !</h1>       
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="form-container">
+                <text style="color: #1DB954;"><strong><i>Plongez dans une expérience musicale personnalisée qui s'adapte à chaque moment de votre journée.</i></strong></text>
+                <h2 style="color: #1DB954;">Veuillez insérer la ville où vous vous situez.</h2>
+                <form action="/getmeteo" method="post">
+                    <input type="text" id="city" name="city" placeholder="Ex: Paris">
+                    <br>
+                    <button type="submit">Obtenir la météo</button>
+                </form>
+                <h2 style="color: #ff2727;">Cette ville n'est pas valide...</h2>
+            </div>
+        </body>
+    </html>
+    '''
+
+#Route d'accueil apres authentification où l'utilisateur va mettre sa location où une ville aléatoire   
 @app.route('/getweather')
 def getweather():
     lat = session['lat']
@@ -113,11 +489,86 @@ def getweather():
                 session['weather_main'] = weather_main
                 session['weather_description'] = weather_description
                 return redirect(url_for('choosemoodweather', _external=True))
-    return "No data found for the specified city 3", 404
+            return '''
+    <html>
+        <head>
+            <title>Entrez votre ville</title>
+            <style>
+                /* Style pour la barre de navigation */
+                .navbar {
+                    background-color: #5b5c66;
+                    position: fixed;
+                    top: 0;
+                    width: 100%;
+                    height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    box-shadow: 0 4px 2px -2px gray;
+                    z-index: 1000;
+                }
+                /* Style pour l'image dans la barre de navigation */
+                .navbar img {
+                    height: 40px;
+                }
+                /* Style pour le contenu principal */
+                body {
+                    background-color: #191414;
+                    color: #FFFFFF;
+                    font-family: Arial, sans-serif;
+                    text-align: center;
+                    margin: 0;
+                    padding: 0;
+                    padding-top: 80px; /* Pour ne pas que le contenu soit masqué par la barre de navigation */
+                }
+                /* Style du formulaire */
+                .form-container {
+                    margin-top: 50px;
+                }
+                input[type="text"] {
+                    padding: 10px;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    border: 1px solid #1DB954;
+                    margin: 10px;
+                }
+                button {
+                    background-color: #1DB954;
+                    color: #FFFFFF;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+            </style>
+        </head>
+        <body>
+            <!-- Barre de navigation -->
+            <div class="navbar">
+                <a href="https://ibb.co/qrpydwW" style="margin-left: 20px;"><img src="https://i.ibb.co/qrpydwW/meteorifylogo.png" alt="meteorifylogo" border="0"></a>   
+                <h1 style="color: #02b44b; margin-left:auto; margin-right:auto;">Bienvenue sur meteorify !</h1>       
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="form-container">
+                <text style="color: #1DB954;"><strong><i>Plongez dans une expérience musicale personnalisée qui s'adapte à chaque moment de votre journée.</i></strong></text>
+                <h2 style="color: #1DB954;">Veuillez insérer la ville où vous vous situez.</h2>
+                <form action="/getmeteo" method="post">
+                    <input type="text" id="city" name="city" placeholder="Ex: Paris">
+                    <br>
+                    <button type="submit">Obtenir la météo</button>
+                </form>
+                <h2style="color:red;">Cette ville n'est pas valide...</h2>
+            </div>
+        </body>
+    </html>
+    '''
+
 
 @app.route('/choosemoodweather')
 def choosemoodweather():
-    if session['temp'] > 20 and session['clouds'] < 50 and session['ressenti'] > 20 :
+    if session['temp'] > 20 and session['clouds'] < 50 and session['clouds'] > 25 and session['ressenti'] > 20 :
                 mood = "heureux"
                 session['mood'] = mood
                 return redirect(url_for('choosemood', _external=True))
@@ -176,12 +627,15 @@ def choosemood():
                 attribute = {
                     'target_acousticness':1,
                     'target_danceability':0,
-                    'target_energy':0.3,
+                    'target_energy':0.1,
                     'target_instrumentalness':0.5,
                     'target_loudness': -15,
-                    'target_popularity': 'pop',
+                    'target_popularity': 50,
                     'target_speechiness':0,
-                    'target_valence':0
+                    'target_valence':0,
+                    'min_tempo':80,
+                    'max_tempo':120,
+                    'target_tempo': 100
                     }
                 session['target_acousticness'] = attribute['target_acousticness']
                 session['target_danceability'] = attribute['target_danceability']
@@ -199,9 +653,12 @@ def choosemood():
                     'target_energy':0.3,
                     'target_instrumentalness':0,
                     'target_loudness': -45,
-                    'target_popularity': 'pop',
+                    'target_popularity': 75,
                     'target_speechiness':0.5,
-                    'target_valence':1
+                    'target_valence':1,
+                    'min_tempo':90,
+                    'max_tempo':140,
+                    'target_tempo': 125
                     }
                 session['target_acousticness'] = attribute['target_acousticness']
                 session['target_danceability'] = attribute['target_danceability']
@@ -219,9 +676,12 @@ def choosemood():
                     'target_energy':1,
                     'target_instrumentalness':0,
                     'target_loudness': -60,
-                    'target_popularity': 'pop',
+                    'target_popularity': 85,
                     'target_speechiness':0.75,
-                    'target_valence':0.75
+                    'target_valence':0.75,
+                    'min_tempo':120,
+                    'max_tempo':180,
+                    'target_tempo': 140
                     }
                 session['target_acousticness'] = attribute['target_acousticness']
                 session['target_danceability'] = attribute['target_danceability']
@@ -234,14 +694,17 @@ def choosemood():
                 return redirect(url_for('createreccs', _external=True))
     elif session['mood'] == "Dépressif":
                 attribute = {
-                    'target_acousticness':0.5,
-                    'target_danceability':1,
+                    'target_acousticness':1,
+                    'target_danceability':0,
                     'target_energy':0,
                     'target_instrumentalness':1,
                     'target_loudness': 0,
-                    'target_popularity': 'pop',
+                    'target_popularity': 10,
                     'target_speechiness':1,
-                    'target_valence':0.3
+                    'target_valence':0.3,
+                    'min_tempo':60,
+                    'max_tempo':110,
+                    'target_tempo': 90
                     }
                 session['target_acousticness'] = attribute['target_acousticness']
                 session['target_danceability'] = attribute['target_danceability']
@@ -278,13 +741,68 @@ def createreccs():
 def createplaylist():
     token_info = get_token()
     sp = spotipy.Spotify(auth=token_info['access_token'])
+    
+    # Récupérer l'ID utilisateur Spotify
     user_id = sp.me()['id']
-    playlist = sp.user_playlist_create(user=user_id, name='Playlist mood: ' + session['mood'], public=False, collaborative=False, description='Playlist créée le ' + datetime.date.today().strftime('%Y-%m-%d') + ' avec ' + str(session['clouds']) + '% de nuages ' + 'La température ressentie est de ' + str(session['ressenti']) + ' degrés. PLAYLIST GENERATED BY METEOFY-SQW1RRL')
-    recc_track_ids = session.get('recc_ids', [])  # Récupérer les IDs des morceaux de la session
+    
+    # Créer une nouvelle playlist avec le mood et la météo
+    playlist = sp.user_playlist_create(
+        user=user_id, 
+        name='Playlist mood: ' + session['mood'], 
+        public=False, 
+        collaborative=False, 
+        description=f'Playlist créée le {datetime.date.today().strftime("%Y-%m-%d")} avec {session["clouds"]}% de nuages. '
+                    f'La température ressentie est de {session["ressenti"]} degrés. '
+                    f'PLAYLIST GENERATED BY METEOFY-SQW1RRL'
+    )
+    
+    # Ajouter les morceaux recommandés à la playlist
+    recc_track_ids = session.get('recc_ids', [])
     if recc_track_ids:
         sp.user_playlist_add_tracks(user=user_id, playlist_id=playlist['id'], tracks=recc_track_ids)
-    return 'Actuellement, il fait ' + str(session['temp']) + ' degrés à ' + str(session['city']) + '\n' + "Il y'as des " + str(session['weather_main']) + ' avec ' + str(session['clouds']) + '% de nuages.\n La température ressentie est de ' + str(session['ressenti']) + ' degrés Celsius.\nLe mood de playlist qui vous est donc conseillé est un mood plutôt ' + str(session['mood']) + '.\n Bref, entre temps, votre playlist a été créée avec succès général!'
+    
+    # Lien vers la playlist Spotify
+    playlist_url = playlist['external_urls']['spotify']
+    
+    # Dictionnaire pour les GIFs en fonction de l'émotion
+    gifs = {
+        'heureux': 'https://s1.gifyu.com/images/SOkm5.gif',  # Remplacer par un vrai lien vers un GIF "heureux"
+        'triste': 'https://s1.gifyu.com/images/SOkkK.gif',  # Remplacer par un vrai lien vers un GIF "triste"
+        'énergique': 'https://s11.gifyu.com/images/SOkmJ.gif',  # Remplacer par un vrai lien vers un GIF "énergique"
+        'Dépressif': 'https://s1.gifyu.com/images/SOkki.gif'   # Remplacer par un vrai lien vers un GIF "dépressif"
+    }
+    
+    # Récupérer le lien GIF correspondant à l'émotion actuelle
+    mood_gif = gifs.get(session['mood'])
 
+    # Retourner un message de succès à l'utilisateur avec du style et un GIF en arrière-plan
+    return f'''
+    <body style="background-image: url('{mood_gif}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+    <div style="background-color: rgba(0, 0, 0, 1); color: #1DB954; font-family: 'Arial', sans-serif; padding: 30px; border-radius: 10px; text-align: center; margin: 0 auto; width: 40%; position: relative; top: 10%; transform: translateY(-50%);">
+    <a href="/" style="text-decoration: none;">
+            <img src="https://s1.gifyu.com/images/SOkIP.png" alt="Logo" style="max-width: 40%; cursor: pointer;">
+        </a>    
+    </div>
+    <div style="background-color: rgba(0, 0, 0, 1); color: #1DB954; font-family: 'Arial', sans-serif; padding: 20px; border-radius: 10px; text-align: center; margin: 0 auto; width: 60%; position: relative; top: 40%; transform: translateY(-50%);">
+        <h2 style="color: #1DB954;">Playlist créée avec succès !</h2>
+        <p>Actuellement, il fait <strong>{session["temp"]} degrés</strong> à <strong>{session["city"]}</strong>.</p>
+        <p>Il y a <strong>{session["clouds"]}%</strong> de nuages.</p>
+        <p>La température ressentie est de <strong>{session["ressenti"]} degrés Celsius</strong>.</p>
+        <p>Le mood de playlist conseillé est un mood plutôt <strong>{session["mood"]}</strong>.</p>
+        <p>Votre playlist a été créée avec succès !</p>
+        
+        <!-- Bouton pour ouvrir la playlist sur Spotify -->
+        <a href="{playlist_url}" target="_blank" style="display: inline-block; background-color: #1DB954; color: white; padding: 10px 20px; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px;">
+            Ouvrir sur Spotify
+        </a>
+    </div>
+    
+    </body>
+    '''
+
+
+
+#RECUPERE GITHUB
 
 # function to get the token info from the session
 def get_token():

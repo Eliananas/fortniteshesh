@@ -1,0 +1,43 @@
+FRENCH VERSION
+
+Bonjour et bienvenue sur meteorify!
+Les instructions ont été rédigées le 30.09.2024
+L'algorithme est actuellement encore en développement de la version 1.0.
+Nous en sommes actuellement à la phase finale (Styliser les pages flask)
+
+Voici les instructions:
+1.Télécharger le dossier SPOTIFYALG-MAIN
+2.Ouvrir le fichier cettefoisavcmeteo.py (Voici sa route:Spotifyalg-main -> Python -> cettefoisavcmeteo.py)
+3.Lancer le programme
+4.Le terminal s'ouvrira et un lien web s'affichera normalement (ex. http:122.xxx.xxx.xxx )
+5.Cliquez dessus et vous serez redirigés sur l'interface de mon programme!
+
+!!! LE PROGRAMME EST TOUJOURS EN PHASE DE TEST !!!
+Si vous voulez l'utiliser, il faut donc m'envoyer votre e-mail pour que je puisse vous autoriser l'accès.
+Mon e-mail: feitorelias@gmail.com
+
+
+
+----------------------------------------------------------------------------------------
+
+
+
+ENGLISH VERSION
+
+Hello and welcome to Meteorify!
+The instructions were written on 30.09.2024.
+The algorithm is currently still under development for version 1.0.
+We are currently in the final phase (Styling the Flask pages).
+
+Here are the instructions:
+
+1.Download the folder SPOTIFYALG-MAIN.
+2.Open the file cettefoisavcmeteo.py (Here’s the path: Spotifyalg-main -> Python -> cettefoisavcmeteo.py).
+3.Run the program.
+4.The terminal will open, and a web link should normally appear (e.g., http://122.xxx.xxx.xxx).
+5.Click on it, and you will be redirected to the interface of my program!
+
+
+!!! THE PROGRAM IS STILL IN THE TESTING PHASE !!!
+If you want to use it, you will need to send me your email so I can grant you access.
+My email: feitorelias@gmail.com
